@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Komprehensif UTS Data Science - 60 Soal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="bg-indigo-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-amber-400"></i> Kuis Komprehensif Persiapan UTS Data Science
+                </h1>
+                <p class="text-xs md:text-sm text-indigo-200">60 Soal Terurut: Jenis Data $\rightarrow$ EDA $\rightarrow$ ML Intro $\rightarrow$ Naïve Bayes $\rightarrow$ KNN $\rightarrow$ Linear Regression</p>
+            </div>
+            <div class="mt-2 md:mt-0 bg-indigo-950/70 px-4 py-2 rounded-lg border border-indigo-500/30 text-right">
+                <span class="text-xs text-indigo-300 block">Total Poin Terkumpul</span>
+                <span id="score-display" class="text-2xl font-black text-amber-400">0</span>
+                <span class="text-xs text-indigo-200">/ 100</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 mt-8">
+
+        <!-- Navigation Tabs -->
+        <div class="flex border-b border-gray-300 mb-6 bg-white rounded-t-xl overflow-hidden shadow-sm">
+            <button id="tab-pg" onclick="switchTab('pg')" class="flex-1 py-3.5 px-4 font-semibold text-center border-b-2 border-indigo-600 text-indigo-600 bg-indigo-50/50 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-list-check"></i> Bagian I: Pilihan Ganda (50 Soal • 50 Poin)
+            </button>
+            <button id="tab-essay" onclick="switchTab('essay')" class="flex-1 py-3.5 px-4 font-semibold text-center text-gray-500 hover:text-indigo-600 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-pen-to-square"></i> Bagian II: Esai Interaktif (10 Soal • 50 Poin)
+            </button>
+        </div>
+
+        <!-- SECTION 1: PILIHAN GANDA -->
+        <section id="section-pg" class="space-y-6">
+            <div class="bg-indigo-50 border-l-4 border-indigo-600 p-4 rounded-r-lg mb-6 shadow-sm">
+                <p class="text-sm text-indigo-900">
+                    <strong>Petunjuk Bagian I:</strong> Terdapat 50 soal pilihan ganda (+1 poin per jawaban benar). Soal-soal telah dikelompokkan dan diurutkan berdasarkan bab materi UTS Anda.
+                </p>
+            </div>
+
+            <!-- Wadah Soal PG -->
+            <div id="pg-container" class="space-y-6"></div>
+        </section>
+
+        <!-- SECTION 2: ESAI INTERAKTIF -->
+        <section id="section-essay" class="space-y-6 hidden">
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg mb-6 shadow-sm">
+                <p class="text-sm text-amber-900">
+                    <strong>Petunjuk Bagian II:</strong> Terdapat 10 soal esai analisis (+5 poin per soal). Ketik jawaban Anda lalu klik <strong>"Periksa Jawaban"</strong> untuk evaluasi kata kunci otomatis dan umpan balik instan!
+                </p>
+            </div>
+
+            <!-- Wadah Soal Esai -->
+            <div id="essay-container" class="space-y-6"></div>
+        </section>
+
+        <!-- Reset Box -->
+        <div class="mt-10 bg-white p-6 rounded-xl shadow-md text-center border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">Status Pengerjaan Kuis UTS</h3>
+            <p class="text-slate-600 mb-4">Selesaikan seluruh 60 soal pilihan ganda dan esai untuk mencapai skor maksimal 100 poin.</p>
+            <button onclick="resetQuiz()" class="bg-rose-500 hover:bg-rose-600 text-white font-medium py-2.5 px-6 rounded-lg transition shadow-sm inline-flex items-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> Ulangi Kuis Dari Awal
+            </button>
+        </div>
+
+    </main>
+
+    <script>
+        // Data 50 Soal Pilihan Ganda Terurut Sesuai Bab Materi
+        const pgQuestions = [
+            // --- BAB 1: JENIS DATA (Soal 1-8) ---
+            {
+                id: 1,
+                topic: "1. Jenis Data",
+                question: "Plat nomor kendaraan motor (misal: 'B 1234 ABC') dan nomor KTP tergolong ke dalam jenis data skala...",
+                options: ["Nominal", "Ordinal", "Interval", "Rasio"],
+                correct: 0,
+                rationale: "Data Nominal digunakan hanya untuk identifikasi atau pembeda tanpa ada urutan atau tingkat matematis."
+            },
+            {
+                id: 2,
+                topic: "1. Jenis Data",
+                question: "Tingkat pendidikan seseorang (SD, SMP, SMA, S1, S2) termasuk skala pengukuran data...",
+                options: ["Nominal", "Ordinal", "Interval", "Rasio"],
+                correct: 1,
+                rationale: "Data Ordinal berbentuk kategori yang memiliki urutan/tingkatan bertingkat yang jelas."
+            },
+            {
+                id: 3,
+                topic: "1. Jenis Data",
+                question: "Manakah di bawah ini yang merupakan contoh dari **Data Interval**?",
+                options: ["Berat badan manusia dalam kg", "Suhu udara dalam Celsius (0°C tidak berarti tidak ada suhu)", "Jumlah uang tabungan di bank", "Tingkat kepuasan pelanggan"],
+                correct: 1,
+                rationale: "Data Interval memiliki jarak konsisten tetapi TIDAK memiliki nilai nol mutlak (0°C bukan arti tidak ada suhu)."
+            },
+            {
+                id: 4,
+                topic: "1. Jenis Data",
+                question: "Pendapatan bulanan karyawan (Rp 5.000.000) tergolong data Rasio karena...",
+                options: ["Memiliki kategori unik tanpa urutan", "Memiliki nilai nol mutlak (Rp 0 berarti tidak ada pendapatan)", "Tidak bisa dikenakan operasi perkalian", "Berbentuk teks non-numerik"],
+                correct: 1,
+                rationale: "Data Rasio memiliki nilai nol mutlak sehingga operasi perkalian dan perbandingan nilai bernilai valid secara matematis."
+            },
+            {
+                id: 5,
+                topic: "1. Jenis Data",
+                question: "Pengelompokan data berdasarkan atribut kualitatif dan kuantitatif membedakan data menjadi...",
+                options: ["Data Primer dan Sekunder", "Data Kategorikal (Kualitatif) dan Numerik (Kuantitatif)", "Data Internal dan Eksternal", "Data Diskrit dan Kontinu saja"],
+                correct: 1,
+                rationale: "Data Kategorikal berbentuk teks/label kualitatif, sedangkan Data Numerik berbentuk angka kuantitatif."
+            },
+            {
+                id: 6,
+                topic: "1. Jenis Data",
+                question: "Jumlah anak dalam satu keluarga (misal: 0, 1, 2, 3) merupakan contoh data numerik jenis...",
+                options: ["Kontinu", "Diskrit", "Kategori Nominal", "Interval Tanpa Nol"],
+                correct: 1,
+                rationale: "Data Diskret adalah data numerik hasil perhitungan berupa bilangan bulat (tidak berupa pecahan/desimal kontinu)."
+            },
+            {
+                id: 7,
+                topic: "1. Jenis Data",
+                question: "Tinggi badan siswa yang diukur dalam satuan cm (misal: 165.5 cm) tergolong data numerik...",
+                options: ["Diskrit", "Kontinu", "Nominal", "Ordinal"],
+                correct: 1,
+                rationale: "Data Kontinu diperoleh dari hasil pengukuran dan nilainya dapat berbentuk deret pecahan/desimal tak terhingga."
+            },
+            {
+                id: 8,
+                topic: "1. Jenis Data",
+                question: "Operasi matematika perbandingan rasio (misal: A dua kali lebih berat dibanding B) hanya sah dilakukan pada skala data...",
+                options: ["Nominal", "Ordinal", "Interval", "Rasio"],
+                correct: 3,
+                rationale: "Operasi perkalian dan pembagian perbandingan rasio hanya berlaku pada skala Rasio karena memiliki titik nol mutlak."
+            },
+
+            // --- BAB 2: EXPLORATORY DATA ANALYSIS / EDA (Soal 9-16) ---
+            {
+                id: 9,
+                topic: "2. Exploratory Data Analysis (EDA)",
+                question: "Tujuan utama dari tahapan Exploratory Data Analysis (EDA) sebelum pemodelan adalah...",
+                options: ["Membuat model Machine Learning secepat mungkin", "Memahami struktur, pola, sebaran, dan kualitas data secara rinci", "Menghapus seluruh baris data tanpa memeriksa isi data", "Mengubah data numerik menjadi data teks"],
+                correct: 1,
+                rationale: "EDA bertujuan untuk mengenali karakteristik data, mendeteksi anomali/outlier, serta menemukan insight awal."
+            },
+            {
+                id: 10,
+                topic: "2. Exploratory Data Analysis (EDA)",
+                question: "Visualisasi data berupa **Boxplot** sangat ideal digunakan untuk mengidentifikasi...",
+                options: ["Matriks korelasi antar variabel", "Nilai pencilan (outlier) dan lima ringkasan angka (Min, Q1, Median, Q3, Max)", "Tren waktu masa depan secara pasti", "Distribusi frekuensi teks kategorikal"],
+                correct: 1,
+                rationale: "Boxplot memperlihatkan sebaran data kuartil serta menandai pencilan/outlier di luar pagar batas."
+            },
+            {
+                id: 11,
+                topic: "2. Exploratory Data Analysis (EDA)",
+                question: "Garis tengah di dalam kotak (box) pada diagram Boxplot mewakili nilai statistik...",
+                options: ["Mean (Rata-rata)", "Median (Kuartil Kedua / Q2)", "Modus", "Standar Deviasi"],
+                correct: 1,
+                rationale: "Garis di dalam kotak Boxplot melambangkan nilai Median (Q2) atau nilai tengah data."
+            },
+            {
+                id: 12,
+                topic: "2. Exploratory Data Analysis (EDA)",
+                question: "Rentang Antarkuartil atau *Interquartile Range* (IQR) dihitung menggunakan rumus...",
+                options: ["IQR = Q3 - Q1", "IQR = Q3 + Q1", "IQR = Max - Min", "IQR = Q2 / 2"],
+                correct: 0,
+                rationale: "IQR dihitung dari selisih antara Kuartil Atas (Q3) dan Kuartil Bawah (Q1)."
+            },
+            {
+                id: 13,
+                topic: "2. Exploratory Data Analysis (EDA)",
+                question: "Suatu data dianggap sebagai pencilan (outlier) bawah menurut rumus IQR jika nilainya lebih kecil dari...",
+                options: ["Q1 - 1.5 * IQR", "Q3 + 1.5 * IQR", "Median - IQR", "Q1 / 1.5"],
+                correct: 0,
+                rationale: "Batas bawah outlier didefinisikan sebagai Q1 - 1.5 * IQR."
+            },
+            {
+                id: 14,
+                topic: "2. Exploratory Data Analysis (EDA)",
+                question: "Metode visualisasi yang paling efektif untuk melihat pola hubungan korelasi antara dua variabel numerik kontinu adalah...",
+                options: ["Pie Chart", "Scatter Plot (Diagram Pencars)", "Bar Chart", "Donut Chart"],
+                correct: 1,
+                rationale: "Scatter Plot menggambarkan titik pasangan nilai (X, Y) untuk melihat hubungan atau tren antar dua variabel."
+            },
+            {
+                id: 15,
+                topic: "2. Exploratory Data Analysis (EDA)",
+                question: "Nilai koefisien korelasi Pearson sebesar +0.95 menunjukkan hubungan antar variabel yang...",
+                options: ["Sangat lemah dan negatif", "Sangat kuat dan positif", "Tidak ada hubungan sama sekali", "Sempurna negatif"],
+                correct: 1,
+                rationale: "Nilai korelasi mendekati +1 menunjukkan hubungan linier positif yang sangat kuat."
+            },
+            {
+                id: 16,
+                topic: "2. Exploratory Data Analysis (EDA)",
+                question: "Penanganan *missing value* dengan mengganti nilai yang hilang menggunakan nilai rata-rata (mean) dinamakan proses...",
+                options: ["Outlier Removal", "Mean Imputation", "Min-Max Normalization", "Label Encoding"],
+                correct: 1,
+                rationale: "Imputasi rata-rata (Mean Imputation) merekap data hilang menggunakan rata-rata fitur terkait."
+            },
+
+            // --- BAB 3: PENGANTAR MACHINE LEARNING & SUPERVISED LEARNING (Soal 17-25) ---
+            {
+                id: 17,
+                topic: "3. Pengantar Machine Learning",
+                question: "Perbedaan utama **Supervised Learning** dibanding **Unsupervised Learning** adalah...",
+                options: ["Supervised Learning tidak membutuhkan data numerik", "Supervised Learning menggunakan data yang memiliki label/target variabel", "Supervised Learning hanya bisa digunakan untuk clustering", "Unsupervised Learning membutuhkan pengawasan manusia saat running code"],
+                correct: 1,
+                rationale: "Supervised Learning menggunakan data berlabel sebagai acuan pembelajaran model."
+            },
+            {
+                id: 18,
+                topic: "3. Pengantar Machine Learning",
+                question: "Dua tugas utama (*tasks*) dalam paradigma Supervised Learning adalah...",
+                options: ["Clustering dan Association Rule", "Classification dan Regression", "Dimensionality Reduction dan Anomaly Detection", "Partitioning dan Density Estimation"],
+                correct: 1,
+                rationale: "Supervised Learning terbagi menjadi Klasifikasi (target kualitatif) dan Regresi (target kuantitatif)."
+            },
+            {
+                id: 19,
+                topic: "3. Pengantar Machine Learning",
+                question: "Memprediksi harga rumah (misal: Rp 750 Juta) berdasarkan luas tanah dan lokasi merupakan contoh tugas...",
+                options: ["Classification", "Regression", "Clustering", "Association"],
+                correct: 1,
+                rationale: "Memprediksi angka kontinu numerik merupakan permasalahan Regresi."
+            },
+            {
+                id: 20,
+                topic: "3. Pengantar Machine Learning",
+                question: "Memprediksi apakah sebuah transaksi kartu kredit tergolong 'Penipuan' atau 'Normal' adalah contoh tugas...",
+                options: ["Regression", "Classification", "Clustering", "Forecasting"],
+                correct: 1,
+                rationale: "Memprediksi label kategori terpisah (kategori дискрет) tergolong masalah Klasifikasi."
+            },
+            {
+                id: 21,
+                topic: "3. Pengantar Machine Learning",
+                question: "Pengelompokan pelanggan minimarket berdasarkan kemiripan pola belanja tanpa label awal merupakan contoh tugas...",
+                options: ["Supervised Learning", "Unsupervised Learning (Clustering)", "Simple Linear Regression", "Naïve Bayes Classification"],
+                correct: 1,
+                rationale: "Mencari kelompok tanpa variabel target terlabel merupakan Unsupervised Learning (Clustering)."
+            },
+            {
+                id: 22,
+                topic: "3. Pengantar Machine Learning",
+                question: "Matriks yang digunakan untuk mengukur kinerja model klasifikasi (True Positive, False Positive, dsb) disebut...",
+                options: ["Correlation Matrix", "Confusion Matrix", "Covariance Matrix", "Scatter Matrix"],
+                correct: 1,
+                rationale: "Confusion Matrix menyajikan perbandingan hasil prediksi model dengan label aktual data."
+            },
+            {
+                id: 23,
+                topic: "3. Pengantar Machine Learning",
+                question: "Proporsi total prediksi benar dari seluruh total data dalam Confusion Matrix disebut nilai...",
+                options: ["Precision", "Recall", "Accuracy", "F1-Score"],
+                correct: 2,
+                rationale: "Akurasi dihitung dari (TP + TN) / Total Data."
+            },
+            {
+                id: 24,
+                topic: "3. Pengantar Machine Learning",
+                question: "Kondisi di mana model Machine Learning terlalu menghafal data *training* sehingga performanya buruk pada data baru dinamakan...",
+                options: ["Underfitting", "Overfitting", "Good Fit", "Optimal Tuning"],
+                correct: 1,
+                rationale: "Overfitting terjadi saat model sangat akurat di data training tapi gagal melakukan generalisasi di data uji baru."
+            },
+            {
+                id: 25,
+                topic: "3. Pengantar Machine Learning",
+                question: "Properti *Feature Scaling* (seperti Normalisasi Min-Max) sangat penting dilakukan sebelum pemodelan karena...",
+                options: ["Menghapus baris data yang kosong", "Mencegah fitur berukuran skala besar mendominasi perhitungan jarak", "Mengubah data kategori menjadi numerik", "Menghitung probabilitas Bayes"],
+                correct: 1,
+                rationale: "Feature Scaling menyamakan rentang skala seluruh atribut agar atribut bernilai besar tidak mendominasi."
+            },
+
+            // --- BAB 4: NAÏVE BAYES (Soal 26-33) ---
+            {
+                id: 26,
+                topic: "4. Naïve Bayes",
+                question: "Algoritma Naïve Bayes didasarkan pada rumus matematika...",
+                options: ["Teorema Bayes (Bayes' Theorem)", "Persamaan Garis Regresi", "Jarak Euclidean", "K-Means Centroid"],
+                correct: 0,
+                rationale: "Naïve Bayes menggunakan Teorema Bayes tentang probabilitas bersyarat $P(A|B)$."
+            },
+            {
+                id: 27,
+                topic: "4. Naïve Bayes",
+                question: "Asumsi utama yang dinamakan 'Naïve' (polos) pada algoritma ini adalah...",
+                options: ["Data harus berdistribusi normal saja", "Setiap fitur/atribut dianggap saling bebas (independen) satu sama lain diberikan kelasnya", "Jumlah sampel data harus sedikit", "Variabel target berupa angka desimal kontinu"],
+                correct: 1,
+                rationale: "Disebut 'naïve' karena mengasumsikan antar fitur independen secara bersyarat terhadap label kelas."
+            },
+            {
+                id: 28,
+                topic: "4. Naïve Bayes",
+                question: "Dalam Teorema Bayes $P(Y|X) = \\frac{P(X|Y) \\cdot P(Y)}{P(X)}$, komponen $P(Y)$ disebut sebagai...",
+                options: ["Posterior Probability", "Prior Probability", "Likelihood", "Predictor Prior Probability"],
+                correct: 1,
+                rationale: "$P(Y)$ adalah probabilitas awal kelas sebelum melihat bukti/fitur $X$ (Prior Probability)."
+            },
+            {
+                id: 29,
+                topic: "4. Naïve Bayes",
+                question: "Komponen $P(X|Y)$ dalam Teorema Bayes mewakili nilai...",
+                options: ["Likelihood (Kemungkinan)", "Prior", "Posterior", "Evidence"],
+                correct: 0,
+                rationale: "$P(X|Y)$ adalah Likelihood, yaitu probabilitas munculnya fitur $X$ jika diketahui kelasnya adalah $Y$."
+            },
+            {
+                id: 30,
+                topic: "4. Naïve Bayes",
+                question: "Komponen $P(Y|X)$ yang dicari untuk menentukan hasil prediksi kelas dinamakan...",
+                options: ["Prior Probability", "Likelihood", "Posterior Probability", "Standard Error"],
+                correct: 2,
+                rationale: "Posterior Probability $P(Y|X)$ adalah probabilitas kelas $Y$ setelah bukti fitur $X$ diperhitungkan."
+            },
+            {
+                id: 31,
+                topic: "4. Naïve Bayes",
+                question: "Teknik **Laplace Smoothing** ditambahkan pada perhitungan Naïve Bayes bertujuan untuk mengatasi masalah...",
+                options: ["Missing Value pada data", "Probabilitas bernilai nol (Zero Probability) yang membuat perkalian bernilai nol", "Data outlier pada regresi", "Koreksi nilai centroid"],
+                correct: 1,
+                rationale: "Laplace Smoothing mencegah perkalian probabilitas bernilai 0 akibat adanya kombinasi kata/fitur yang belum pernah muncul di data training."
+            },
+            {
+                id: 32,
+                topic: "4. Naïve Bayes",
+                question: "Varian Naïve Bayes yang cocok digunakan jika fitur numerik berdistribusi kontinu dinamakan...",
+                options: ["Multinomial Naïve Bayes", "Bernoulli Naïve Bayes", "Gaussian Naïve Bayes", "Categorical Naïve Bayes"],
+                correct: 2,
+                rationale: "Gaussian Naïve Bayes mengasumsikan nilai kontinu mengikuti distribusi Gaussian (Normal)."
+            },
+            {
+                id: 33,
+                topic: "4. Naïve Bayes",
+                question: "Salah satu keunggulan utama dari algoritma Naïve Bayes adalah...",
+                options: ["Sangat lambat saat pelatihan data", "Sederhana, cepat, dan bekerja sangat baik untuk klasifikasi teks/spam filter", "Dapat menangani korelasi kompleks antar fitur secara otomatis", "Tidak membutuhkan data training"],
+                correct: 1,
+                rationale: "Naïve Bayes sangat efisien, cepat, serta terbukti ampuh pada aplikasi klasifikasi teks seperti pemfilteran spam email."
+            },
+
+            // --- BAB 5: K-NEAREST NEIGHBOR / KNN (Soal 34-42) ---
+            {
+                id: 34,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "Algoritma KNN mengklasifikasikan data baru berdasarkan...",
+                options: ["Aturan pohon keputusan", "Kemiripan/jarak terdekat ke $K$ sampel data training terdekat", "Persamaan garis regresi", "Probabilitas Bayes"],
+                correct: 1,
+                rationale: "KNN mencari $K$ tetangga terdekat dalam ruang fitur dan mengambil keputusan kelas terbanyak."
+            },
+            {
+                id: 35,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "Rumus jarak yang paling umum digunakan untuk menghitung jarak antara dua titik $(x_1, y_1)$ dan $(x_2, y_2)$ pada KNN adalah...",
+                options: ["Jarak Euclidean $d = \\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}$", "Jarak Cosine", "Jarak Hamming", "Jarak Mahalanobis"],
+                correct: 0,
+                rationale: "Jarak Euclidean adalah rumus garis lurus standar dalam ruang berdimensi n."
+            },
+            {
+                id: 36,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "Jarak Manhattan dihitung menggunakan rumus...",
+                options: ["Akar kuadrat jumlah kuadrat selisih", "Jumlah dari nilai mutlak selisih antar koordinat $d = |x_1 - x_2| + |y_1 - y_2|$", "Nilai maksimum selisih koordinat", "Hasil kali perkalian skalar"],
+                correct: 1,
+                rationale: "Jarak Manhattan (*City Block*) dihitung dari penjumlahan selisih mutlak tiap sumbu koordinat."
+            },
+            {
+                id: 37,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "Proses penentuan kelas akhir untuk data baru pada kasus klasifikasi KNN dilakukan melalui...",
+                options: ["Rata-rata hitung (Mean)", "Mayoritas Suara (*Majority Voting*) dari $K$ tetangga", "Nilai terkecil", "Perkalian matriks"],
+                correct: 1,
+                rationale: "Kelas terbanyak (Moda) dari $K$ tetangga terdekat dipilih sebagai prediksi label."
+            },
+            {
+                id: 38,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "Jika KNN digunakan untuk kasus **Regresi**, nilai prediksi akhir ditentukan berdasarkan...",
+                options: ["Majority voting", "Rata-rata (Mean) nilai target dari $K$ tetangga terdekat", "Nilai terbesar", "Persamaan kuadrat"],
+                correct: 1,
+                rationale: "Pada KNN Regresi, nilai target dihitung dari rata-rata nilai $K$ tetangga terdekat."
+            },
+            {
+                id: 39,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "Pemilihan nilai $K = 1$ pada KNN rentan menyebabkan model mengalami...",
+                options: ["Underfitting dan sangat stabil", "Overfitting dan sangat sensitif terhadap noise/outlier", "Perhitungan yang sangat lambat", "Akurasi selalu 0%"],
+                correct: 1,
+                rationale: "Jika $K=1$, model hanya melihat 1 tetangga sehingga sangat sensitif terhadap data pencilan/noise (overfitting)."
+            },
+            {
+                id: 40,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "Untuk kasus klasifikasi dengan 2 kelas (biner), disarankan memilih nilai $K$ berupa bilangan...",
+                options: ["Genap untuk menghindari seri", "Ganjil untuk menghindari hasil seri dalam pemungutan suara", "Nol", "Negatif"],
+                correct: 1,
+                rationale: "Pemilihan $K$ ganjil mencegah terjadinya hasil Imbang (draw) pada voting klasifikasi biner."
+            },
+            {
+                id: 41,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "KNN disebut sebagai *Lazy Learner* (pembelajar malas) karena...",
+                options: ["Tidak pernah memberikan hasil akurat", "Tidak melakukan fase pelatihan eksplisit; perhitungan dilakukan saat data baru datang", "Membutuhkan memori GPU sangat kecil", "Sangat cepat saat melakukan prediksi data uji"],
+                correct: 1,
+                rationale: "KNN tidak membuat model parametrik awal, melainkan menyimpan seluruh data dan baru menghitung jarak saat prediksi."
+            },
+            {
+                id: 42,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "Diberikan titik data $A(1, 2)$ dan $B(4, 6)$. Jarak Euclidean antara $A$ dan $B$ adalah...",
+                options: ["3", "4", "5", "7"],
+                correct: 2,
+                rationale: "$d = \\sqrt{(4-1)^2 + (6-2)^2} = \\sqrt{3^2 + 4^2} = \\sqrt{9+16} = \\sqrt{25} = 5$."
+            },
+
+            // --- BAB 6: LINEAR REGRESSION (Soal 43-50) ---
+            {
+                id: 43,
+                topic: "6. Linear Regression",
+                question: "Persamaan garis *Simple Linear Regression* dinyatakan dengan rumus...",
+                options: ["$Y = \\beta_0 + \\beta_1 X$", "$Y = X^2 + C$", "$P(Y) = e^X$", "$Y = K \\cdot X + Z^2$"],
+                correct: 0,
+                rationale: "Persamaan regresi linier sederhana menghubungkan 1 variabel independen $X$ dengan variabel dependen $Y$."
+            },
+            {
+                id: 44,
+                topic: "6. Linear Regression",
+                question: "Dalam persamaan $Y = \\beta_0 + \\beta_1 X$, simbol $\\beta_0$ menyatakan...",
+                options: ["Slope (Kemiringan Garis)", "Intercept (Titik Potong Sumbu Y saat X = 0)", "Error Term", "Koefisien Korelasi"],
+                correct: 1,
+                rationale: "$\\beta_0$ adalah nilai Intercept (konstanta Y saat nilai $X=0$)."
+            },
+            {
+                id: 45,
+                topic: "6. Linear Regression",
+                question: "Simbol $\\beta_1$ dalam persamaan regresi linier mewakili...",
+                options: ["Slope (Kemiringan garis / besarnya perubahan Y jika X naik 1 unit)", "Intercept", "Nol Mutlak", "Residual"],
+                correct: 0,
+                rationale: "$\\beta_1$ adalah Slope/kemiringan garis yang mengukur perubahan variabel $Y$ per satuan peningkatan $X$."
+            },
+            {
+                id: 46,
+                topic: "6. Linear Regression",
+                question: "Metode standar untuk menentukan garis regresi terbaik dengan meminimalkan jumlah kuadrat error dinamakan...",
+                options: ["Ordinary Least Squares (OLS)", "Maximum Likelihood Estimation", "Gradient Descent saja", "K-Means Clustering"],
+                correct: 0,
+                rationale: "OLS meminimalkan *Sum of Squared Errors* (SSE) antara nilai aktual dan garis prediksi."
+            },
+            {
+                id: 47,
+                topic: "6. Linear Regression",
+                question: "Selisih antara nilai aktual $Y$ dan nilai prediksi $\\hat{Y}$ dinamakan...",
+                options: ["Slope", "Residual (Error)", "Intercept", "Variance"],
+                correct: 1,
+                rationale: "Residual dihitung dari $e = Y - \\hat{Y}$."
+            },
+            {
+                id: 48,
+                topic: "6. Linear Regression",
+                question: "Metrik $R^2$ (*R-Squared* / Koefisien Determinasi) mengukur...",
+                options: ["Akurasi klasifikasi biner", "Proporsi variansi variabel dependen $Y$ yang dapat dijelaskan oleh variabel $X$", "Jumlah outlier", "Probabilitas Bayes"],
+                correct: 1,
+                rationale: "$R^2$ menunjukkan seberapa baik model regresi menjelaskan variabilitas data (rentang 0 sampai 1)."
+            },
+            {
+                id: 49,
+                topic: "6. Linear Regression",
+                question: "Diberikan persamaan regresi $Y = 10 + 3X$. Jika nilai $X = 4$, berapakah nilai prediksi $Y$?",
+                options: [ "12", "19", "22", "40" ],
+                correct: 2,
+                rationale: "$Y = 10 + 3(4) = 10 + 12 = 22$."
+            },
+            {
+                id: 50,
+                topic: "6. Linear Regression",
+                question: "Jika dalam *Multiple Linear Regression* terdapat korelasi linier yang sangat tinggi antar sesama variabel independen $X$, kondisi ini disebut...",
+                options: ["Heteroskedastisitas", "Multikolinearitas", "Autokorelasi", "Homoskedastisitas"],
+                correct: 1,
+                rationale: "Multikolinearitas terjadi ketika antar variabel bebas ($X$) saling berkorelasi tinggi."
+            }
+        ];
+
+        // Data 10 Soal Esai Interaktif
+        const essayQuestions = [
+            {
+                id: 1,
+                topic: "1. Jenis Data",
+                question: "Jelaskan perbedaan mendasar antara **Data Interval** dan **Data Rasio** beserta masing-masing contohnya!",
+                points: 5,
+                keywords: [
+                    { word: ["nol mutlak", "absolute zero", "titik nol"], weight: 2, desc: "Menjelaskan keberadaan nol mutlak" },
+                    { word: ["interval"], weight: 1.5, desc: "Menyebutkan contoh data Interval (misal: Suhu C/F)" },
+                    { word: ["rasio"], weight: 1.5, desc: "Menyebutkan contoh data Rasio (misal: Berat, Tinggi, Pendapatan)" }
+                ],
+                sampleAnswer: "Perbedaan utama terletak pada nilai nol mutlak. Data Interval tidak memiliki nol mutlak (contoh: Suhu 0°C bukan arti tidak ada suhu), sedangkan Data Rasio memiliki nol mutlak (contoh: Berat 0 kg berarti tidak ada massa)."
+            },
+            {
+                id: 2,
+                topic: "2. Exploratory Data Analysis (EDA)",
+                question: "Sebutkan 3 komponen utama ringkasan statistik yang dapat dibaca dari visualisasi **Boxplot**!",
+                points: 5,
+                keywords: [
+                    { word: ["median", "q2"], weight: 2, desc: "Menyebutkan Median / Q2" },
+                    { word: ["kuartil", "q1", "q3", "iqr"], weight: 1.5, desc: "Menyebutkan Kuartil (Q1/Q3/IQR)" },
+                    { word: ["outlier", "pencilan", "min", "max"], weight: 1.5, desc: "Menyebutkan Outlier / Nilai Min-Max" }
+                ],
+                sampleAnswer: "Boxplot menampilkan: (1) Median (Q2), (2) Kuartil Atas dan Bawah (Q1 & Q3), serta (3) Nilai minimum, maksimum, dan pencilan (outlier)."
+            },
+            {
+                id: 3,
+                topic: "2. Exploratory Data Analysis (EDA)",
+                question: "Jelaskan mengapa penanganan **outlier** dan **missing value** sangat penting dilakukan pada tahap EDA!",
+                points: 5,
+                keywords: [
+                    { word: ["kualitas", "bias", "distorsi", "mempengaruhi"], weight: 2.5, desc: "Menjelaskan dampak bias/distorsi pada model" },
+                    { word: ["performa", "akurasi", "model"], weight: 2.5, desc: "Menjelaskan efek terhadap akurasi model ML" }
+                ],
+                sampleAnswer: "Outlier dan missing value dapat merusak distribusi data, menyebabkan bias pada perhitungan statistik (seperti mean), dan menurunkan akurasi performa model Machine Learning."
+            },
+            {
+                id: 4,
+                topic: "3. Pengantar Machine Learning",
+                question: "Bandingkan tugas **Klasifikasi** dan **Regresi** dalam Supervised Learning berdasarkan jenis variabel targetnya!",
+                points: 5,
+                keywords: [
+                    { word: ["kategori", "diskrit", "label", "kualitatif"], weight: 2.5, desc: "Target klasifikasi berupa kategori/diskrit" },
+                    { word: ["kontinu", "angka", "numerik", "kuantitatif"], weight: 2.5, desc: "Target regresi berupa angka/kontinu" }
+                ],
+                sampleAnswer: "Klasifikasi memiliki variabel target berupa label kategori/diskrit (contoh: Spam/Bukan Spam), sedangkan Regresi memiliki variabel target berupa nilai numerik kontinu (contoh: Harga rumah)."
+            },
+            {
+                id: 5,
+                topic: "3. Pengantar Machine Learning",
+                question: "Jelaskan apa yang dimaksud dengan kondisi **Overfitting** dan bagaimana cara mengatasinya!",
+                points: 5,
+                keywords: [
+                    { word: ["menghafal", "training", "gagal", "generalisasi"], weight: 2.5, desc: "Menjelaskan pengertian overfitting" },
+                    { word: ["data", "regularisasi", "cross validation", "fitur"], weight: 2.5, desc: "Menyebutkan solusi penanganan overfitting" }
+                ],
+                sampleAnswer: "Overfitting adalah kondisi saat model sangat akurat pada data training tetapi buruk pada data uji baru. Cara mengatasinya: menambah data, melakukan seleksi fitur, atau menggunakan teknik Cross-Validation."
+            },
+            {
+                id: 6,
+                topic: "4. Naïve Bayes",
+                question: "Tuliskan rumus **Teorema Bayes** dan jelaskan arti dari komponen **Prior** dan **Posterior**!",
+                points: 5,
+                keywords: [
+                    { word: ["bayes", "p(a|b)", "p(y|x)"], weight: 2, desc: "Menuliskan atau menjelaskan rumus Bayes" },
+                    { word: ["prior"], weight: 1.5, desc: "Menjelaskan Prior (probabilitas awal)" },
+                    { word: ["posterior"], weight: 1.5, desc: "Menjelaskan Posterior (probabilitas setelah bukti)" }
+                ],
+                sampleAnswer: "Rumus: P(Y|X) = [P(X|Y) * P(Y)] / P(X). Prior P(Y) adalah probabilitas awal kelas sebelum melihat bukti, sedangkan Posterior P(Y|X) adalah probabilitas kelas setelah bukti diperhitungkan."
+            },
+            {
+                id: 7,
+                topic: "4. Naïve Bayes",
+                question: "Mengapa teknik **Laplace Smoothing** diperlukan dalam perhitungan algoritma Naïve Bayes?",
+                points: 5,
+                keywords: [
+                    { word: ["nol", "zero", "0"], weight: 2.5, desc: "Menjelaskan masalah probabilitas bernilai nol" },
+                    { word: ["perkalian", "menghindari", "mencegah"], weight: 2.5, desc: "Menjelaskan pencegahan hasil perkalian nol" }
+                ],
+                sampleAnswer: "Laplace Smoothing digunakan untuk memberi nilai kecil pada kombinasi fitur yang belum pernah muncul di data training agar tidak menghasilkan probabilitas 0 yang akan membatalkan seluruh hasil perkalian."
+            },
+            {
+                id: 8,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "Bagaimana cara kerja algoritma **KNN** dalam menentukan kelas dari suatu data baru?",
+                points: 5,
+                keywords: [
+                    { word: ["jarak", "euclidean"], weight: 2, desc: "Menjelaskan perhitungan jarak" },
+                    { word: ["k tetangga", "tetangga terdekat"], weight: 1.5, desc: "Menjelaskan pencarian K tetangga" },
+                    { word: ["voting", "majority", "mayoritas"], weight: 1.5, desc: "Menjelaskan pemungutan suara mayoritas" }
+                ],
+                sampleAnswer: "KNN bekerja dengan: (1) Menghitung jarak (misal Euclidean) data baru ke seluruh data training, (2) Memilih K tetangga dengan jarak terdekat, dan (3) Menentukan kelas akhir menggunakan majority voting."
+            },
+            {
+                id: 9,
+                topic: "5. K-Nearest Neighbor (KNN)",
+                question: "Mengapa **Feature Scaling** (seperti Normalisasi) sangat krusial sebelum menjalankan KNN?",
+                points: 5,
+                keywords: [
+                    { word: ["skala", "rentang", "dominasi"], weight: 2.5, desc: "Menjelaskan dominasi fitur berukuran besar" },
+                    { word: ["jarak", "euclidean", "seimbang"], weight: 2.5, desc: "Menjelaskan pengaruh pada kesetaraan jarak" }
+                ],
+                sampleAnswer: "Karena KNN berbasis perhitungan jarak. Jika fitur memiliki rentang skala yang berbeda jauh (misal umur 20-50 vs gaji 5 juta), fitur bernilai besar akan mendominasi perhitungan jarak."
+            },
+            {
+                id: 10,
+                topic: "6. Linear Regression",
+                question: "Jelaskan arti dari koefisien **Slope (β1)** dan **Intercept (β0)** pada persamaan regresi linier Y = β0 + β1*X!",
+                points: 5,
+                keywords: [
+                    { word: ["intercept", "beta 0", "saat x=0"], weight: 2.5, desc: "Menjelaskan Intercept" },
+                    { word: ["slope", "beta 1", "perubahan", "kemiringan"], weight: 2.5, desc: "Menjelaskan Slope" }
+                ],
+                sampleAnswer: "Intercept (β0) adalah nilai perkiraan Y ketika nilai X bernilai 0. Slope (β1) menunjukkan besarnya perubahan/peningkatan pada Y untuk setiap kenaikan 1 satuan nilai X."
+            }
+        ];
+
+        let scores = { pg: {}, essay: {} };
+
+        document.addEventListener("DOMContentLoaded", function() {
+            renderPG();
+            renderEssay();
+            updateTotalScore();
+        });
+
+        function switchTab(tab) {
+            const pgSec = document.getElementById("section-pg");
+            const essaySec = document.getElementById("section-essay");
+            const tabPgBtn = document.getElementById("tab-pg");
+            const tabEssayBtn = document.getElementById("tab-essay");
+
+            if (tab === 'pg') {
+                pgSec.classList.remove("hidden");
+                essaySec.classList.add("hidden");
+                tabPgBtn.className = "flex-1 py-3.5 px-4 font-semibold text-center border-b-2 border-indigo-600 text-indigo-600 bg-indigo-50/50 transition flex items-center justify-center gap-2";
+                tabEssayBtn.className = "flex-1 py-3.5 px-4 font-semibold text-center text-gray-500 hover:text-indigo-600 transition flex items-center justify-center gap-2";
+            } else {
+                pgSec.classList.add("hidden");
+                essaySec.classList.remove("hidden");
+                tabEssayBtn.className = "flex-1 py-3.5 px-4 font-semibold text-center border-b-2 border-indigo-600 text-indigo-600 bg-indigo-50/50 transition flex items-center justify-center gap-2";
+                tabPgBtn.className = "flex-1 py-3.5 px-4 font-semibold text-center text-gray-500 hover:text-indigo-600 transition flex items-center justify-center gap-2";
+            }
+        }
+
+        function renderPG() {
+            const container = document.getElementById("pg-container");
+            if (!container) return;
+            container.innerHTML = "";
+
+            pgQuestions.forEach((q, idx) => {
+                const card = document.createElement("div");
+                card.className = "bg-white p-6 rounded-xl shadow-sm border border-slate-200 transition hover:shadow-md";
+                
+                let optionsHTML = "";
+                q.options.forEach((opt, oIdx) => {
+                    optionsHTML += `
+                        <label id="opt-label-${q.id}-${oIdx}" class="flex items-start p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm md:text-base">
+                            <input type="radio" name="pg-${q.id}" value="${oIdx}" onchange="checkPG(${q.id}, ${oIdx})" class="mt-1 text-indigo-600 focus:ring-indigo-500">
+                            <span class="ml-3 text-slate-700">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider bg-indigo-100 text-indigo-800 py-1 px-3 rounded-full">Soal ${idx + 1} • ${q.topic}</span>
+                        <span id="pg-status-${q.id}" class="text-xs font-semibold text-slate-400">1 Poin</span>
+                    </div>
+                    <h3 class="text-base md:text-lg font-semibold text-slate-800 mb-4">${q.question}</h3>
+                    <div class="space-y-2 mb-4" id="opts-container-${q.id}">
+                        ${optionsHTML}
+                    </div>
+                    <div id="pg-feedback-${q.id}" class="hidden p-4 rounded-lg text-sm"></div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            if (window.renderMathInElement) {
+                renderMathInElement(container);
+            }
+        }
+
+        function checkPG(qId, selectedIdx) {
+            const q = pgQuestions.find(item => item.id === qId);
+            const feedbackEl = document.getElementById(`pg-feedback-${qId}`);
+            const statusEl = document.getElementById(`pg-status-${qId}`);
+            const inputs = document.querySelectorAll(`input[name="pg-${qId}"]`);
+
+            inputs.forEach(input => input.disabled = true);
+
+            const isCorrect = (selectedIdx === q.correct);
+
+            q.options.forEach((_, oIdx) => {
+                const label = document.getElementById(`opt-label-${qId}-${oIdx}`);
+                if (oIdx === q.correct) {
+                    label.className = "flex items-start p-3 border-2 border-emerald-500 bg-emerald-50 rounded-lg text-sm md:text-base font-medium text-emerald-900";
+                } else if (oIdx === selectedIdx && !isCorrect) {
+                    label.className = "flex items-start p-3 border-2 border-rose-500 bg-rose-50 rounded-lg text-sm md:text-base text-rose-900";
+                } else {
+                    label.className = "flex items-start p-3 border rounded-lg opacity-50 text-sm md:text-base";
+                }
+            });
+
+            feedbackEl.classList.remove("hidden");
+            if (isCorrect) {
+                scores.pg[qId] = 1;
+                statusEl.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Benar (+1)</span>`;
+                feedbackEl.className = "p-4 rounded-lg text-sm bg-emerald-50 border border-emerald-200 text-emerald-900";
+                feedbackEl.innerHTML = `<p class="font-bold mb-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> Jawaban Anda Benar!</p><p>${q.rationale}</p>`;
+            } else {
+                scores.pg[qId] = 0;
+                statusEl.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-xmark"></i> Salah (0)</span>`;
+                feedbackEl.className = "p-4 rounded-lg text-sm bg-rose-50 border border-rose-200 text-rose-900";
+                feedbackEl.innerHTML = `<p class="font-bold mb-1"><i class="fa-solid fa-circle-xmark text-rose-600"></i> Jawaban Kurang Tepat.</p><p>${q.rationale}</p>`;
+            }
+
+            if (window.renderMathInElement) {
+                renderMathInElement(feedbackEl);
+            }
+
+            updateTotalScore();
+        }
+
+        function renderEssay() {
+            const container = document.getElementById("essay-container");
+            if (!container) return;
+            container.innerHTML = "";
+
+            essayQuestions.forEach((q, idx) => {
+                const card = document.createElement("div");
+                card.className = "bg-white p-6 rounded-xl shadow-sm border border-slate-200 transition hover:shadow-md";
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800 py-1 px-3 rounded-full">Esai ${idx + 1} • ${q.topic}</span>
+                        <span id="essay-status-${q.id}" class="text-xs font-semibold text-slate-400">Maksimal ${q.points} Poin</span>
+                    </div>
+                    <h3 class="text-base md:text-lg font-semibold text-slate-800 mb-3">${q.question}</h3>
+                    
+                    <textarea id="essay-input-${q.id}" rows="3" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-400 focus:border-amber-400 text-sm md:text-base text-slate-800" placeholder="Ketik analisis jawaban Anda di sini..."></textarea>
+                    
+                    <div class="mt-3 flex justify-end">
+                        <button id="essay-btn-${q.id}" onclick="checkEssay(${q.id})" class="bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-5 rounded-lg text-sm transition shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Periksa Jawaban
+                        </button>
+                    </div>
+
+                    <div id="essay-feedback-${q.id}" class="hidden mt-4 p-4 rounded-lg text-sm"></div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            if (window.renderMathInElement) {
+                renderMathInElement(container);
+            }
+        }
+
+        function checkEssay(qId) {
+            const q = essayQuestions.find(item => item.id === qId);
+            const inputEl = document.getElementById(`essay-input-${qId}`);
+            const btnEl = document.getElementById(`essay-btn-${qId}`);
+            const feedbackEl = document.getElementById(`essay-feedback-${qId}`);
+            const statusEl = document.getElementById(`essay-status-${qId}`);
+
+            const userText = inputEl.value.trim().toLowerCase();
+
+            if (!userText) {
+                alert("Mohon isi jawaban esai terlebih dahulu!");
+                return;
+            }
+
+            inputEl.disabled = true;
+            btnEl.disabled = true;
+            btnEl.classList.add("opacity-50", "cursor-not-allowed");
+
+            let earnedPoints = 0;
+            let matchedCriteria = [];
+            let missedCriteria = [];
+
+            q.keywords.forEach(kw => {
+                const matched = kw.word.some(w => userText.includes(w));
+                if (matched) {
+                    earnedPoints += kw.weight;
+                    matchedCriteria.push(kw.desc);
+                } else {
+                    missedCriteria.push(kw.desc);
+                }
+            });
+
+            scores.essay[qId] = earnedPoints;
+
+            feedbackEl.classList.remove("hidden");
+            statusEl.innerHTML = `<span class="text-amber-600 font-bold"><i class="fa-solid fa-award"></i> ${earnedPoints} / ${q.points} Poin</span>`;
+
+            let feedbackHTML = `<div class="mb-2 font-bold flex items-center justify-between">
+                <span><i class="fa-solid fa-magnifying-glass-chart"></i> Evaluasi Otomatis: ${earnedPoints} / ${q.points} Poin</span>
+            </div>`;
+
+            if (matchedCriteria.length > 0) {
+                feedbackHTML += `<p class="text-emerald-700 font-medium text-xs mb-1"><i class="fa-solid fa-circle-check"></i> Konsep ditemukan:</p>
+                <ul class="list-disc list-inside text-xs text-emerald-800 mb-3 space-y-0.5">
+                    ${matchedCriteria.map(c => `<li>${c}</li>`).join("")}
+                </ul>`;
+            }
+
+            if (missedCriteria.length > 0) {
+                feedbackHTML += `<p class="text-amber-800 font-medium text-xs mb-1"><i class="fa-solid fa-circle-exclamation"></i> Konsep perlu dilengkapi:</p>
+                <ul class="list-disc list-inside text-xs text-amber-900 mb-3 space-y-0.5">
+                    ${missedCriteria.map(c => `<li>${c}</li>`).join("")}
+                </ul>`;
+            }
+
+            feedbackHTML += `<div class="pt-2 border-t border-amber-200/60 mt-2">
+                <p class="font-semibold text-slate-800 text-xs mb-1"><i class="fa-solid fa-lightbulb text-amber-500"></i> Kunci Jawaban Acuan:</p>
+                <p class="text-slate-600 italic text-xs bg-white/70 p-2.5 rounded border border-amber-200">${q.sampleAnswer}</p>
+            </div>`;
+
+            feedbackEl.className = "p-4 rounded-lg text-sm bg-amber-50 border border-amber-200 text-slate-800";
+            feedbackEl.innerHTML = feedbackHTML;
+
+            if (window.renderMathInElement) {
+                renderMathInElement(feedbackEl);
+            }
+
+            updateTotalScore();
+        }
+
+        function updateTotalScore() {
+            let totalPG = Object.values(scores.pg).reduce((a, b) => a + b, 0); // Maks 50 Poin
+            let totalEssay = Object.values(scores.essay).reduce((a, b) => a + b, 0); // Maks 50 Poin
+            let grandTotal = totalPG + totalEssay;
+
+            const scoreDisplay = document.getElementById("score-display");
+            if (scoreDisplay) {
+                scoreDisplay.textContent = Math.round(grandTotal);
+            }
+        }
+
+        function resetQuiz() {
+            if (confirm("Apakah Anda yakin ingin mengulang kuis dari awal? Semua poin akan direset.")) {
+                scores = { pg: {}, essay: {} };
+                renderPG();
+                renderEssay();
+                updateTotalScore();
+                switchTab('pg');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>
